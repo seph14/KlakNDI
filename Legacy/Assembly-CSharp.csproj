@@ -59,6 +59,7 @@
     <Compile Include="Assets\SetReceiverImage.cs" />
     <Compile Include="Assets\FrameCount.cs" />
     <Compile Include="Assets\SourceSelector.cs" />
+    <Compile Include="Assets\SendTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

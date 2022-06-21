@@ -1267,6 +1267,7 @@ GameObject:
   - component: {fileID: 1595881515}
   - component: {fileID: 1595881517}
   - component: {fileID: 1595881518}
+  - component: {fileID: 1595881519}
   m_Layer: 0
   m_Name: Sender
   m_TagString: Untagged
@@ -1320,11 +1321,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ndiName: NDI Raw Sender
-  _keepAlpha: 1
+  _keepAlpha: 0
   _frameUpdated: 0
-  _rgbaChannel: 0
-  _sourceTexture: {fileID: 2800000, guid: 5633cb818e255cb4f98f8ee8f02ef51a, type: 3}
+  _rgbaChannel: 1
+  _sourceTexture: {fileID: 0}
   _resources: {fileID: 11400000, guid: 69304b86950074db7ba8caba75214004, type: 2}
+--- !u!114 &1595881519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1595881513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e5f778bc3cd2d74a8ef70acdb9f660b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  texture: {fileID: 0}
 --- !u!1 &1642520235
 GameObject:
   m_ObjectHideFlags: 0
