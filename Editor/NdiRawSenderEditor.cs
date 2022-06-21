@@ -14,6 +14,7 @@ sealed class NdiRawSenderEditor : UnityEditor.Editor {
 
     AutoProperty _ndiName;
     AutoProperty _keepAlpha;
+    AutoProperty _rgbaChannel;
     AutoProperty _frameUpdated;
     AutoProperty _sourceTexture;
 
@@ -29,7 +30,8 @@ sealed class NdiRawSenderEditor : UnityEditor.Editor {
 
         // Keep Alpha
         EditorGUILayout.PropertyField(_keepAlpha);
-
+        // RGB Channel
+        EditorGUILayout.PropertyField(_rgbaChannel);
         // Frame Updated
         EditorGUILayout.PropertyField(_frameUpdated);
 
