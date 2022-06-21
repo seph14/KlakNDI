@@ -51,7 +51,7 @@ namespace Klak.Ndi {
                     // Pixel format conversion
                     var buffer = _converter.Encode(sourceTexture, keepAlpha, true);
                     // Readback entry allocation and request
-                    _pool.NewEntry(w, h, keepAlpha, metadata)
+                    _pool.NewEntry(w, h, keepAlpha, RGBChannel, metadata)
                          .RequestReadback(buffer, _onReadback);
                     frameUpdated = false;
                 }
@@ -64,7 +64,7 @@ namespace Klak.Ndi {
             // Readback entry retrieval
             var entry = _pool.FindEntry(req.GetData<byte>());
             if (entry == null) return;
-
+            
             // Invalid state detection
             if (req.hasError || _send == null || _send.IsInvalid || _send.IsClosed)  {
                 // Do nothing but release the readback entry.

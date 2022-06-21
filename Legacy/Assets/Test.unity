@@ -1320,8 +1320,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _ndiName: NDI Raw Sender
-  _keepAlpha: 0
+  _keepAlpha: 1
   _frameUpdated: 0
+  _rgbaChannel: 0
   _sourceTexture: {fileID: 2800000, guid: 5633cb818e255cb4f98f8ee8f02ef51a, type: 3}
   _resources: {fileID: 11400000, guid: 69304b86950074db7ba8caba75214004, type: 2}
 --- !u!1 &1642520235

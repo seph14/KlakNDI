@@ -19,6 +19,7 @@ public sealed partial class NdiRawSender : MonoBehaviour {
 
     [SerializeField] bool _keepAlpha = false;
     [SerializeField] bool _frameUpdated = false;
+    [SerializeField] bool _rgbaChannel = false;
 
     public bool keepAlpha { 
         get => _keepAlpha;
@@ -28,10 +29,14 @@ public sealed partial class NdiRawSender : MonoBehaviour {
         get => _frameUpdated;
         set => _frameUpdated = value;
     }
+    public bool RGBChannel {
+        get => _rgbaChannel;
+        set => _rgbaChannel = value;
+    }
     #endregion
 
     #region Capture target settings
-    [SerializeField] Texture _sourceTexture = null;
+        [SerializeField] Texture _sourceTexture = null;
 
     public Texture sourceTexture
       { get => _sourceTexture;

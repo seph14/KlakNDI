@@ -68,6 +68,9 @@
     <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Component\NdiReceiver_Properties.cs">
       <Link>Runtime\Component\NdiReceiver_Properties.cs</Link>
     </Compile>
+    <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Component\NdiRawSender_Properties.cs">
+      <Link>Runtime\Component\NdiRawSender_Properties.cs</Link>
+    </Compile>
     <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Component\NdiResources.cs">
       <Link>Runtime\Component\NdiResources.cs</Link>
     </Compile>
@@ -98,20 +101,17 @@
     <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Component\NdiSender_Properties.cs">
       <Link>Runtime\Component\NdiSender_Properties.cs</Link>
     </Compile>
-    <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Internal\ReadbackPool.cs">
-      <Link>Runtime\Internal\ReadbackPool.cs</Link>
+    <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Component\NdiRawSender.cs">
+      <Link>Runtime\Component\NdiRawSender.cs</Link>
     </Compile>
     <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Component\NdiFinder.cs">
       <Link>Runtime\Component\NdiFinder.cs</Link>
     </Compile>
+    <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Internal\ReadbackPool.cs">
+      <Link>Runtime\Internal\ReadbackPool.cs</Link>
+    </Compile>
     <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Internal\AndroidHelper.cs">
       <Link>Runtime\Internal\AndroidHelper.cs</Link>
-    </Compile>
-    <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Component\NdiRawSender.cs">
-      <Link>Runtime\Component\NdiRawSender.cs</Link>
-    </Compile>
-    <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Runtime\Component\NdiRawSender_Properties.cs">
-      <Link>Runtime\Component\NdiRawSender_Properties.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

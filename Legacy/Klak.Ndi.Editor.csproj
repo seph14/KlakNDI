@@ -65,14 +65,14 @@
     <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Editor\NdiReceiverEditor.cs">
       <Link>Editor\NdiReceiverEditor.cs</Link>
     </Compile>
+    <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Editor\NdiRawSenderEditor.cs">
+      <Link>Editor\NdiRawSenderEditor.cs</Link>
+    </Compile>
     <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Editor\PbxModifier.cs">
       <Link>Editor\PbxModifier.cs</Link>
     </Compile>
     <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Editor\NdiSenderEditor.cs">
       <Link>Editor\NdiSenderEditor.cs</Link>
-    </Compile>
-    <Compile Include="D:\Commercial Projects\KlakNDI\jp.keijiro.klak.ndi\Editor\NdiRawSenderEditor.cs">
-      <Link>Editor\NdiRawSenderEditor.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

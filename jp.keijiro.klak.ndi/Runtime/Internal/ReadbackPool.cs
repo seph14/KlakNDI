@@ -27,7 +27,7 @@ sealed class ReadbackEntry
     NativeArray<byte> _image;
     IntPtr _metadata;
     int _width, _height;
-    bool _alpha;
+    bool _alpha, _rgb;
 
     ~ReadbackEntry()
     {
@@ -51,13 +51,13 @@ sealed class ReadbackEntry
     // identifier -- We don't care whether the content is ready or not.
 
     public Interop.FourCC FourCC
-      => _alpha ? Interop.FourCC.UYVA : Interop.FourCC.UYVY;
-
+        => _rgb ? (_alpha ? Interop.FourCC.UYVA : Interop.FourCC.UYVY) :
+                  (_alpha ? Interop.FourCC.RGBA : Interop.FourCC.RGBX);
     #endregion
 
     #region Resource allocation/deallocation
 
-    public void Allocate(int width, int height, bool alpha, string metadata)
+    public void Allocate(int width, int height, bool alpha, bool rgb, string metadata)
     {
         // Image buffer
         _image = new NativeArray<byte>
@@ -71,7 +71,7 @@ sealed class ReadbackEntry
             _metadata = Marshal.StringToHGlobalAnsi(metadata);
 
         // Frame settings
-        (_width, _height, _alpha) = (width, height, alpha);
+        (_width, _height, _alpha, _rgb) = (width, height, alpha, rgb);
     }
 
     public void Deallocate()
@@ -140,10 +140,19 @@ sealed class ReadbackPool : IDisposable
     #region Pool operations
 
     public ReadbackEntry
-      NewEntry(int width, int height, bool alpha, string metadata)
+    NewEntry(int width, int height, bool alpha, string metadata)
     {
         var entry = _cold.Count > 0 ? _cold.Pop() : new ReadbackEntry();
-        entry.Allocate(width, height, alpha, metadata);
+        entry.Allocate(width, height, alpha, false, metadata);
+        _hot.Add(entry);
+        return entry;
+    }
+
+    public ReadbackEntry
+    NewEntry(int width, int height, bool alpha, bool rgbChannel, string metadata)
+    {
+        var entry = _cold.Count > 0 ? _cold.Pop() : new ReadbackEntry();
+        entry.Allocate(width, height, alpha, rgbChannel, metadata);
         _hot.Add(entry);
         return entry;
     }
