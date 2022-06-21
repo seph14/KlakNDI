@@ -9,8 +9,8 @@ namespace Klak.Ndi {
 // Small utility functions
 static class Util
 {
-    public static int FrameDataSize(int width, int height, bool alpha)
-      => width * height * (alpha ? 3 : 2);
+    public static int FrameDataSize(int width, int height, bool alpha, bool rgb)
+      => width * height * ((alpha ? 3 : 2) + (rgb ? 1 : 0));
 
     public static bool HasAlpha(Interop.FourCC fourCC)
       => fourCC == Interop.FourCC.UYVA;

@@ -40,7 +40,7 @@ sealed class ReadbackEntry
     #region Public accessors
 
     public int Width => _width;
-    public int Stride => _width * 2;
+    public int Stride => _width * ((_alpha && _rgb) ? 4 : (_rgb ? 3 : 2));
     public int Height => _height;
 
     public IntPtr MetadataPointer => _metadata;
@@ -51,8 +51,8 @@ sealed class ReadbackEntry
     // identifier -- We don't care whether the content is ready or not.
 
     public Interop.FourCC FourCC
-        => _rgb ? (_alpha ? Interop.FourCC.UYVA : Interop.FourCC.UYVY) :
-                  (_alpha ? Interop.FourCC.RGBA : Interop.FourCC.RGBX);
+        => _rgb ? (_alpha ? Interop.FourCC.RGBA : Interop.FourCC.RGBX) :
+                  (_alpha ? Interop.FourCC.UYVA : Interop.FourCC.UYVY);
     #endregion
 
     #region Resource allocation/deallocation
@@ -61,9 +61,9 @@ sealed class ReadbackEntry
     {
         // Image buffer
         _image = new NativeArray<byte>
-          (Util.FrameDataSize(width, height, alpha),
+          (Util.FrameDataSize(width, height, alpha, rgb),
            Allocator.Persistent, NativeArrayOptions.UninitializedMemory);
-
+        
         // Metadata string on heap
         if (string.IsNullOrEmpty(metadata))
             _metadata = IntPtr.Zero;
@@ -72,6 +72,7 @@ sealed class ReadbackEntry
 
         // Frame settings
         (_width, _height, _alpha, _rgb) = (width, height, alpha, rgb);
+        //Debug.Log("size: " + _image.Length + " - " + (Stride * height) + " - " + (4 * width * height));
     }
 
     public void Deallocate()
@@ -91,10 +92,13 @@ sealed class ReadbackEntry
         (_width, _height, _alpha) = (0, 0, false);
     }
 
-    #endregion
+        #endregion
 
     #region Readback request initiators
-
+    public void RequestReadback
+      (Texture source, Action<AsyncGPUReadbackRequest> callback)
+      => AsyncGPUReadback.RequestIntoNativeArray(ref _image, source, 0, callback);
+        
     public void RequestReadback
       (ComputeBuffer source, Action<AsyncGPUReadbackRequest> callback)
       => AsyncGPUReadback.RequestIntoNativeArray(ref _image, source, callback);

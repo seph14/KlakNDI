@@ -57,7 +57,7 @@ sealed class FormatConverter : IDisposable
     {
         var width = source.width;
         var height = source.height;
-        var dataCount = Util.FrameDataSize(width, height, enableAlpha) / 4;
+        var dataCount = Util.FrameDataSize(width, height, enableAlpha, false) / 4;
 
         // Reallocate the output buffer when the output size was changed.
         if (_encoderOutput != null && _encoderOutput.count != dataCount)
@@ -86,7 +86,7 @@ sealed class FormatConverter : IDisposable
       (CommandBuffer cb, RenderTargetIdentifier source,
        int width, int height, bool enableAlpha, bool vflip)
     {
-        var dataCount = Util.FrameDataSize(width, height, enableAlpha) / 4;
+        var dataCount = Util.FrameDataSize(width, height, enableAlpha, false) / 4;
 
         CheckDimensions(width, height);
 
@@ -124,7 +124,7 @@ sealed class FormatConverter : IDisposable
     public RenderTexture
       Decode(int width, int height, bool enableAlpha, IntPtr data)
     {
-        var dataCount = Util.FrameDataSize(width, height, enableAlpha) / 4;
+        var dataCount = Util.FrameDataSize(width, height, enableAlpha, false) / 4;
 
         CheckDimensions(width, height);
 

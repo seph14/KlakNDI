@@ -48,11 +48,16 @@ namespace Klak.Ndi {
                 // Texture capture method
                 if ( frameUpdated && sourceTexture != null) {
                     var (w, h) = (sourceTexture.width, sourceTexture.height);
-                    // Pixel format conversion
-                    var buffer = _converter.Encode(sourceTexture, keepAlpha, true);
-                    // Readback entry allocation and request
-                    _pool.NewEntry(w, h, keepAlpha, RGBChannel, metadata)
-                         .RequestReadback(buffer, _onReadback);
+                    if (RGBChannel) {
+                        _pool.NewEntry(w, h, keepAlpha, RGBChannel, metadata)
+                            .RequestReadback(sourceTexture, _onReadback);
+                    } else {
+                        // Pixel format conversion
+                        var buffer = _converter.Encode(sourceTexture, keepAlpha, true);
+                        // Readback entry allocation and request
+                        _pool.NewEntry(w, h, keepAlpha, RGBChannel, metadata)
+                             .RequestReadback(buffer, _onReadback);
+                    }
                     frameUpdated = false;
                 }
             }
@@ -62,7 +67,8 @@ namespace Klak.Ndi {
         #region GPU readback completion callback
         unsafe void OnReadback(AsyncGPUReadbackRequest req) {
             // Readback entry retrieval
-            var entry = _pool.FindEntry(req.GetData<byte>());
+            var data  = req.GetData<byte>();
+            var entry = _pool.FindEntry(data);
             if (entry == null) return;
             
             // Invalid state detection
