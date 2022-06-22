@@ -6,6 +6,7 @@
 #pragma kernel DecodeUYVY_Linear
 #pragma kernel DecodeUYVA_sRGB
 #pragma kernel DecodeUYVA_Linear
+#pragma kernel DecodeRaw
 
 StructuredBuffer<uint> Source;
 RWTexture2D<float4> Destination;
@@ -127,4 +128,26 @@ void DecodeUYVA_Linear(uint2 id : SV_DispatchThreadID)
     Destination[dp + uint2(1, 0)] = sRGB_to_Linear(d[1]);
     Destination[dp + uint2(2, 0)] = sRGB_to_Linear(d[2]);
     Destination[dp + uint2(3, 0)] = sRGB_to_Linear(d[3]);
+}
+
+[numthreads(16, 16, 1)]
+void DecodeRaw(uint2 id : SV_DispatchThreadID) {
+    uint w, h;
+    Destination.GetDimensions(w, h);
+    uint idx  = (h - 1 - id.y) * w + id.x;
+    uint val  = Source[idx];
+    
+    float4 f4Value;
+
+    f4Value.a = ((val >> 24) & 0xff) / 255.0f;
+    f4Value.b = ((val >> 16) & 0xff) / 255.0f;
+    f4Value.g = ((val >> 8) & 0xff) / 255.0f;
+    f4Value.r = (val & 0xff) / 255.0f;
+    /*
+    f4Value.a = ((val & 0xFF000000) >> 24) / 255.0f;
+    f4Value.r = ((val & 0x00FF0000) >> 16) / 255.0f;
+    f4Value.g = ((val & 0x0000FF00) >> 8) / 255.0f;
+    f4Value.b = ((val & 0x000000FF)) / 255.0f;
+    */
+    Destination[id] = f4Value;
 }

@@ -82,11 +82,16 @@ namespace Klak.Ndi {
             var frame = new Interop.VideoFrame {
                 Width       = entry.Width,
                 Height      = entry.Height,
-                LineStride  = entry.Stride,
                 FourCC      = entry.FourCC,
+                FrameRateN  = 30000,
+                FrameRateD  = 1001,
+                AspectRatio = 0f,
+                LineStride  = entry.Stride,
                 FrameFormat = Interop.FrameFormat.Progressive,
+                Timecode    = int.MaxValue,
                 Data        = entry.ImagePointer,
-                Metadata    = entry.MetadataPointer
+                Metadata    = entry.MetadataPointer,
+                Timestamp   = int.MaxValue
             };
 
             // Async-send initiation

@@ -16,7 +16,11 @@ public sealed partial class NdiReceiver : MonoBehaviour
 
     void PrepareReceiverObjects()
     {
-        if (_recv == null) _recv = RecvHelper.TryCreateRecv(ndiName);
+        if (_recv == null) {
+            if (AcceptRawData)
+                _recv = RecvHelper.TryCreateRawRecv(ndiName);
+            else _recv = RecvHelper.TryCreateRecv(ndiName);
+        }
         if (_converter == null) _converter = new FormatConverter(_resources);
         if (_override == null) _override = new MaterialPropertyBlock();
     }
@@ -46,16 +50,19 @@ public sealed partial class NdiReceiver : MonoBehaviour
         if (frameOrNull == null) return null;
         var frame = (Interop.VideoFrame)frameOrNull;
 
-        // Pixel format conversion
-        var rt = _converter.Decode
-          (frame.Width, frame.Height, Util.HasAlpha(frame.FourCC), frame.Data);
-
         // Metadata retrieval
-        if (frame.Metadata != IntPtr.Zero)
+        RenderTexture rt;
+        if (frame.Metadata != IntPtr.Zero) {
             metadata = Marshal.PtrToStringAnsi(frame.Metadata);
-        else
-            metadata = null;
+        } else metadata = null;
 
+        if(frame.FourCC == Interop.FourCC.RGBA || frame.FourCC == Interop.FourCC.RGBX) {
+            rt = _converter.DecodeRaw(frame.Width, frame.Height, true, frame.Data);
+        } else {
+            // Pixel format conversion
+            rt = _converter.Decode(frame.Width, frame.Height, Util.HasAlpha(frame.FourCC), frame.Data);
+        }
+        
         // Video frame release
         _recv.FreeVideoFrame(frame);
 

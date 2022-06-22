@@ -21,11 +21,12 @@ sealed class NdiReceiverEditor : UnityEditor.Editor
     AutoProperty _targetTexture;
     AutoProperty _targetRenderer;
     AutoProperty _targetMaterialProperty;
+    AutoProperty _acceptRaw;
 
     #pragma warning restore
 
-    // NDI name dropdown
-    void ShowNdiNameDropdown(Rect rect)
+        // NDI name dropdown
+        void ShowNdiNameDropdown(Rect rect)
     {
         var menu = new GenericMenu();
         var sources = NdiFinder.sourceNames;
@@ -72,6 +73,7 @@ sealed class NdiReceiverEditor : UnityEditor.Editor
         // Target Texture/Renderer
         EditorGUILayout.PropertyField(_targetTexture);
         EditorGUILayout.PropertyField(_targetRenderer);
+        EditorGUILayout.PropertyField(_acceptRaw);
 
         EditorGUI.indentLevel++;
 

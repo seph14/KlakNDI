@@ -10,10 +10,12 @@ namespace Klak.Ndi {
 static class Util
 {
     public static int FrameDataSize(int width, int height, bool alpha, bool rgb)
-      => width * height * ((alpha ? 3 : 2) + (rgb ? 1 : 0));
+      => width * height * (rgb ? 4 : (alpha ? 3 : 2));
 
     public static bool HasAlpha(Interop.FourCC fourCC)
-      => fourCC == Interop.FourCC.UYVA;
+      => fourCC == Interop.FourCC.UYVA || 
+         fourCC == Interop.FourCC.RGBA || 
+         fourCC == Interop.FourCC.BGRA;
 
     public static bool InGammaMode
       => QualitySettings.activeColorSpace == ColorSpace.Gamma;
@@ -42,7 +44,10 @@ static class ComputeBufferExtension
         var view =
           NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<byte>
             ((void*)pointer, count * stride, Allocator.None);
-
+            
+        //Debug.Log(view[0] + "," + view[1] + "," + view[2] + "," + view[3]);
+        //Debug.Log(view[4] + "," + view[5] + "," + view[6] + "," + view[7]);
+        
         #if ENABLE_UNITY_COLLECTIONS_CHECKS
         var safety = AtomicSafetyHandle.Create();
         NativeArrayUnsafeUtility.SetAtomicSafetyHandle(ref view, safety);

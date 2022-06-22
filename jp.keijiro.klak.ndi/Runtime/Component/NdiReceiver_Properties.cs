@@ -42,6 +42,11 @@ public sealed partial class NdiReceiver : MonoBehaviour
       { get => _targetMaterialProperty;
         set => _targetMaterialProperty = value; }
 
+    [SerializeField] bool _acceptRaw = false;
+
+    public bool AcceptRawData
+      { get => _acceptRaw;
+        set => _acceptRaw = value; }
     #endregion
 
     #region Runtime property

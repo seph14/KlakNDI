@@ -5,28 +5,25 @@ using Microsoft.Win32.SafeHandles;
 namespace Klak.Ndi.Interop {
 
 // Bandwidth enumeration (equivalent to NDIlib_recv_bandwidth_e)
-public enum Bandwidth
-{
+public enum Bandwidth {
     MetadataOnly = -10,
-    AudioOnly = 10,
-    Lowest = 0,
-    Highest = 100
+    AudioOnly    = 10,
+    Lowest       = 0,
+    Highest      = 100
 }
 
 // Color format enumeration (equivalent to NDIlib_recv_color_format_e)
-public enum ColorFormat
-{
-    BGRX_BGRA = 0,
-    UYVY_BGRA = 1,
-    RGBX_RGBA = 2,
-    UYVY_RGBA = 3,
-    BGRX_BGRA_Flipped = 200,
-    Fastest = 100,
-    Best = 101
+public enum ColorFormat {
+    BGRX_BGRA           = 0,
+    UYVY_BGRA           = 1,
+    RGBX_RGBA           = 2,
+    UYVY_RGBA           = 3,
+    BGRX_BGRA_Flipped   = 200,
+    Fastest             = 100,
+    Best                = 101
 }
 
-public class Recv : SafeHandleZeroOrMinusOneIsInvalid
-{
+public class Recv : SafeHandleZeroOrMinusOneIsInvalid {
     #region SafeHandle implementation
 
     Recv() : base(true) {}
@@ -60,11 +57,10 @@ public class Recv : SafeHandleZeroOrMinusOneIsInvalid
 
     // Constructor options (equivalent to NDIlib_recv_create_v3_t)
     [StructLayout(LayoutKind.Sequential)]
-    public struct Settings
-    {
-        public Source Source;
-        public ColorFormat ColorFormat;
-        public Bandwidth Bandwidth;
+    public struct Settings {
+        public Source       Source;
+        public ColorFormat  ColorFormat;
+        public Bandwidth    Bandwidth;
         [MarshalAs(UnmanagedType.U1)] public bool AllowVideoFields;
         public IntPtr Name;
     }
