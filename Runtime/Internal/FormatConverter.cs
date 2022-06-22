@@ -163,14 +163,53 @@ sealed class FormatConverter : IDisposable
 
         // Decoder compute dispatching
         var compute = _resources.decoderCompute;
-        compute.SetBuffer(pass, "Source", _decoderInput);
+        compute.SetBuffer (pass, "Source",      _decoderInput);
         compute.SetTexture(pass, "Destination", _decoderOutput);
-        compute.Dispatch(pass, width / 16, height / 8, 1);
+        compute.Dispatch  (pass, width / 16, height / 8, 1);
 
         return _decoderOutput;
     }
 
-    #endregion
-}
+    public RenderTexture
+        DecodeRaw(int width, int height, bool enableAlpha, IntPtr data) {
+            var dataCount = Util.FrameDataSize(width, height, enableAlpha, true) / 4;
+            CheckDimensions(width, height);
+            
+            // Reallocate the input buffer when the input size was changed.
+            if (_decoderInput != null && _decoderInput.count != dataCount)
+                ReleaseBuffers();
+
+            // Reallocate the output buffer when the output size was changed.
+            if (_decoderOutput != null &&
+                (_decoderOutput.width != width ||
+                 _decoderOutput.height != height))
+                ReleaseBuffers();
+
+            // Input buffer allocation
+            if (_decoderInput == null)
+                _decoderInput = new ComputeBuffer(dataCount, 4);
+
+            // Output buffer allocation
+            if (_decoderOutput == null) {
+                CheckDimensions(width, height);
+                _decoderOutput = new RenderTexture(width, height, 0);
+                _decoderOutput.enableRandomWrite = true;
+                _decoderOutput.Create();
+            }
+
+            // Input buffer update
+            _decoderInput.SetData(data, dataCount, 4);
+            // Kenel select
+            var pass = 4;
+            // Decoder compute dispatching
+            var compute = _resources.decoderCompute;
+            compute.SetBuffer (pass, "Source",      _decoderInput);
+            compute.SetTexture(pass, "Destination", _decoderOutput);
+            compute.Dispatch  (pass, width / 16, height / 16, 1);
+            return _decoderOutput;
+        }
+
+        #endregion
+    }
 
 } // namespace Klak.Ndi

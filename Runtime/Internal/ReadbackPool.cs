@@ -40,7 +40,7 @@ sealed class ReadbackEntry
     #region Public accessors
 
     public int Width => _width;
-    public int Stride => _width * ((_alpha && _rgb) ? 4 : (_rgb ? 3 : 2));
+    public int Stride => _width * (_rgb ? 4 : (_alpha ? 3 : 2));
     public int Height => _height;
 
     public IntPtr MetadataPointer => _metadata;
