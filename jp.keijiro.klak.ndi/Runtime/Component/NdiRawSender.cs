@@ -45,21 +45,25 @@ namespace Klak.Ndi {
 
                 PrepareSenderObjects();
 
-                // Texture capture method
-                if ( frameUpdated && sourceTexture != null) {
-                    var (w, h) = (sourceTexture.width, sourceTexture.height);
-                    if (RGBChannel) {
-                        _pool.NewEntry(w, h, keepAlpha, RGBChannel, metadata)
-                            .RequestReadback(sourceTexture, _onReadback);
-                    } else {
-                        // Pixel format conversion
-                        var buffer = _converter.Encode(sourceTexture, keepAlpha, true);
-                        // Readback entry allocation and request
-                        _pool.NewEntry(w, h, keepAlpha, RGBChannel, metadata)
-                             .RequestReadback(buffer, _onReadback);
+                // do not send if no connections are available
+                if (_send.GetNumConnections() > 0) {
+                    _hasConnections = true;
+                    // Texture capture method
+                    if (frameUpdated && sourceTexture != null) {
+                        var (w, h) = (sourceTexture.width, sourceTexture.height);
+                        if (RGBChannel) {
+                            _pool.NewEntry(w, h, keepAlpha, RGBChannel, metadata)
+                                .RequestReadback(sourceTexture, _onReadback);
+                        } else {
+                            // Pixel format conversion
+                            var buffer = _converter.Encode(sourceTexture, keepAlpha, true);
+                            // Readback entry allocation and request
+                            _pool.NewEntry(w, h, keepAlpha, RGBChannel, metadata)
+                                 .RequestReadback(buffer, _onReadback);
+                        }
+                        frameUpdated = false;
                     }
-                    frameUpdated = false;
-                }
+                } else _hasConnections = false;
             }
         }
         #endregion
@@ -91,7 +95,7 @@ namespace Klak.Ndi {
                 Timecode    = int.MaxValue,
                 Data        = entry.ImagePointer,
                 Metadata    = entry.MetadataPointer,
-                Timestamp   = int.MaxValue
+                Timestamp   = -1
             };
 
             // Async-send initiation

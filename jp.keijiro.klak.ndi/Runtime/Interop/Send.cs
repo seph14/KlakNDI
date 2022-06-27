@@ -10,9 +10,9 @@ public class Send : SafeHandleZeroOrMinusOneIsInvalid
 
     Send() : base(true) {}
 
-    protected override bool ReleaseHandle()
-    {
+    protected override bool ReleaseHandle() {
         _Destroy(handle);
+        _Destroy();
         return true;
     }
 
@@ -35,6 +35,9 @@ public class Send : SafeHandleZeroOrMinusOneIsInvalid
     public bool SetTally(out Tally tally, uint timeout)
       => _SetTally(this, out tally, timeout);
 
+    public int GetNumConnections(uint timeout = 0)
+      => _CheckConnections(this, timeout);
+
     #endregion
 
     #region Unmanaged interface
@@ -55,6 +58,9 @@ public class Send : SafeHandleZeroOrMinusOneIsInvalid
     [DllImport(Config.DllName, EntryPoint = "NDIlib_send_destroy")]
     static extern void _Destroy(IntPtr send);
 
+    [DllImport(Config.DllName, EntryPoint = "NDIlib_destroy")]
+    static extern void _Destroy();
+
     [DllImport(Config.DllName, EntryPoint = "NDIlib_send_send_video_v2")]
     static extern void _SendVideo(Send send, in VideoFrame data);
 
@@ -67,6 +73,10 @@ public class Send : SafeHandleZeroOrMinusOneIsInvalid
     [DllImport(Config.DllName, EntryPoint = "NDIlib_send_get_tally")]
     [return: MarshalAs(UnmanagedType.U1)]
     static extern bool _SetTally(Send send, out Tally tally, uint timeout);
+
+    [DllImport(Config.DllName, EntryPoint = "NDIlib_send_get_no_connections")]
+    [return: MarshalAs(UnmanagedType.SysInt)]
+    static extern int _CheckConnections(Send send, uint timeout);
 
     #endregion
 }
