@@ -27,15 +27,17 @@ namespace Klak.Ndi {
             if (_converter == null) _converter = new FormatConverter(_resources);
             if (_onReadback == null) _onReadback = OnReadback;
 
-            // thread initialization
-            if (_cancelTokenSource == null) {
-                _cancelTokenSource = new CancellationTokenSource();
-                _token = _cancelTokenSource.Token;
-            }
+            if (_sendOnThread) {
+                // thread initialization
+                if (_cancelTokenSource == null) {
+                    _cancelTokenSource = new CancellationTokenSource();
+                    _token = _cancelTokenSource.Token;
+                }
 
-            if (_thread == null) {
-                _thread = new Thread(ndiProcess);
-                _thread.Start();
+                if (_thread == null) {
+                    _thread = new Thread(ndiProcess);
+                    _thread.Start();
+                }
             }
         }
 
@@ -120,7 +122,15 @@ namespace Klak.Ndi {
                 Timestamp   = -1
             };
 
-            _readySend = true;
+            if (_sendOnThread) {
+                _readySend = true;
+            } else {
+                _send.SendVideoAsync(_frame);
+                // We don't need the last frame anymore. Free it.
+                _pool.FreeMarkedEntry();
+                // Mark this frame to get freed in the next frame.
+                _pool.Mark(_entry);
+            }
         }
         #endregion
 
@@ -173,11 +183,13 @@ namespace Klak.Ndi {
         void OnDisable() => Restart(false);
         void OnDestroy() {
             Restart(false);
-            _cancelTokenSource?.Cancel();
-            _cancelTokenSource?.Dispose();
-            _cancelTokenSource = null;
-            _thread?.Join();
-            GC.SuppressFinalize(this);
+            if (_sendOnThread) {
+                _cancelTokenSource?.Cancel();
+                _cancelTokenSource?.Dispose();
+                _cancelTokenSource = null;
+                _thread?.Join();
+                GC.SuppressFinalize(this);
+            }
         }
         #endregion
     }

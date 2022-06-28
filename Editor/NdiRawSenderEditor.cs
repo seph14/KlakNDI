@@ -17,7 +17,7 @@ sealed class NdiRawSenderEditor : UnityEditor.Editor {
     AutoProperty _rgbaChannel;
     AutoProperty _frameUpdated;
     AutoProperty _sourceTexture;
-
+    AutoProperty _sendOnThread;
     #pragma warning restore
 
     void OnEnable() => AutoProperty.Scan(this);
@@ -34,6 +34,8 @@ sealed class NdiRawSenderEditor : UnityEditor.Editor {
         EditorGUILayout.PropertyField(_rgbaChannel);
         // Frame Updated
         EditorGUILayout.PropertyField(_frameUpdated);
+        // Send On Thread
+        EditorGUILayout.PropertyField(_sendOnThread);
 
         EditorGUI.indentLevel++;
 
