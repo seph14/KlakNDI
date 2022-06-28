@@ -1,14 +1,24 @@
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Threading;
+using System;
 
 namespace Klak.Ndi {
     [ExecuteInEditMode]
     public sealed partial class NdiRawSender : MonoBehaviour {
         #region Sender objects
-        Interop.Send _send;
-        ReadbackPool _pool;
-        FormatConverter _converter;
+        Interop.Send        _send;
+        ReadbackPool        _pool;
+        FormatConverter     _converter;
+        Interop.VideoFrame  _frame;
+        ReadbackEntry       _entry;
         System.Action<AsyncGPUReadbackRequest> _onReadback;
+
+        // offload send from other thread
+        Thread              _thread;
+        CancellationTokenSource _cancelTokenSource;
+        CancellationToken   _token;
+        bool                _readySend = false;
 
         void PrepareSenderObjects() {
             // Private object initialization
@@ -16,6 +26,17 @@ namespace Klak.Ndi {
             if (_pool == null) _pool = new ReadbackPool();
             if (_converter == null) _converter = new FormatConverter(_resources);
             if (_onReadback == null) _onReadback = OnReadback;
+
+            // thread initialization
+            if (_cancelTokenSource == null) {
+                _cancelTokenSource = new CancellationTokenSource();
+                _token = _cancelTokenSource.Token;
+            }
+
+            if (_thread == null) {
+                _thread = new Thread(ndiProcess);
+                _thread.Start();
+            }
         }
 
         void ReleaseSenderObjects() {
@@ -71,41 +92,53 @@ namespace Klak.Ndi {
         #region GPU readback completion callback
         unsafe void OnReadback(AsyncGPUReadbackRequest req) {
             // Readback entry retrieval
-            var data  = req.GetData<byte>();
-            var entry = _pool.FindEntry(data);
+            var entry = _pool.FindEntry(req.GetData<byte>());
             if (entry == null) return;
-            
+            _entry = entry;
+
             // Invalid state detection
-            if (req.hasError || _send == null || _send.IsInvalid || _send.IsClosed)  {
+            if (_readySend || req.hasError || _send == null || 
+                _send.IsInvalid || _send.IsClosed) {
                 // Do nothing but release the readback entry.
-                _pool.Free(entry);
+                _pool.Free(_entry);
                 return;
             }
 
             // Frame data
-            var frame = new Interop.VideoFrame {
-                Width       = entry.Width,
-                Height      = entry.Height,
-                FourCC      = entry.FourCC,
+            _frame = new Interop.VideoFrame {
+                Width       = _entry.Width,
+                Height      = _entry.Height,
+                FourCC      = _entry.FourCC,
                 FrameRateN  = 30000,
                 FrameRateD  = 1001,
                 AspectRatio = 0f,
-                LineStride  = entry.Stride,
+                LineStride  = _entry.Stride,
                 FrameFormat = Interop.FrameFormat.Progressive,
                 Timecode    = int.MaxValue,
-                Data        = entry.ImagePointer,
-                Metadata    = entry.MetadataPointer,
+                Data        = _entry.ImagePointer,
+                Metadata    = _entry.MetadataPointer,
                 Timestamp   = -1
             };
 
-            // Async-send initiation
-            // This causes a synchronization for the last frame -- i.e., It locks
-            // the thread if the last frame is still under processing.
-            _send.SendVideoAsync(frame);
-            // We don't need the last frame anymore. Free it.
-            _pool.FreeMarkedEntry();
-            // Mark this frame to get freed in the next frame.
-            _pool.Mark(entry);
+            _readySend = true;
+        }
+        #endregion
+
+        #region Process thread
+        unsafe void ndiProcess() {
+            while (!_token.IsCancellationRequested) {
+                if (_readySend) {
+                    // Async-send initiation
+                    // This causes a synchronization for the last frame -- i.e., It locks
+                    // the thread if the last frame is still under processing.
+                    _send.SendVideoAsync(_frame);
+                    // We don't need the last frame anymore. Free it.
+                    _pool.FreeMarkedEntry();
+                    // Mark this frame to get freed in the next frame.
+                    _pool.Mark(_entry);
+                    _readySend = false;
+                }
+            }
         }
         #endregion
 
@@ -138,7 +171,14 @@ namespace Klak.Ndi {
         #region MonoBehaviour implementation
         void OnEnable() => ResetState();
         void OnDisable() => Restart(false);
-        void OnDestroy() => Restart(false);
+        void OnDestroy() {
+            Restart(false);
+            _cancelTokenSource?.Cancel();
+            _cancelTokenSource?.Dispose();
+            _cancelTokenSource = null;
+            _thread?.Join();
+            GC.SuppressFinalize(this);
+        }
         #endregion
     }
 }

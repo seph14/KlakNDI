@@ -67,34 +67,37 @@ public sealed partial class NdiSender : MonoBehaviour
 
             PrepareSenderObjects();
 
-            // Texture capture method
-            if (captureMethod == CaptureMethod.Texture && sourceTexture != null)
+            if (_send.GetNumConnections() > 0)
             {
-                var (w, h) = (sourceTexture.width, sourceTexture.height);
+                // Texture capture method
+                if (captureMethod == CaptureMethod.Texture && sourceTexture != null)
+                {
+                    var (w, h) = (sourceTexture.width, sourceTexture.height);
 
-                // Pixel format conversion
-                var buffer = _converter.Encode(sourceTexture, keepAlpha, true);
+                    // Pixel format conversion
+                    var buffer = _converter.Encode(sourceTexture, keepAlpha, true);
 
-                // Readback entry allocation and request
-                _pool.NewEntry(w, h, keepAlpha, metadata)
-                     .RequestReadback(buffer, _onReadback);
-            }
+                    // Readback entry allocation and request
+                    _pool.NewEntry(w, h, keepAlpha, metadata)
+                        .RequestReadback(buffer, _onReadback);
+                }
 
-            // Game View capture method
-            if (captureMethod == CaptureMethod.GameView)
-            {
-                // Game View screen capture with a temporary RT
-                var (w, h) = (Screen.width, Screen.height);
-                var tempRT = RenderTexture.GetTemporary(w, h, 0);
-                ScreenCapture.CaptureScreenshotIntoRenderTexture(tempRT);
+                // Game View capture method
+                if (captureMethod == CaptureMethod.GameView)
+                {
+                    // Game View screen capture with a temporary RT
+                    var (w, h) = (Screen.width, Screen.height);
+                    var tempRT = RenderTexture.GetTemporary(w, h, 0);
+                    ScreenCapture.CaptureScreenshotIntoRenderTexture(tempRT);
 
-                // Pixel format conversion
-                var buffer = _converter.Encode(tempRT, keepAlpha, false);
-                RenderTexture.ReleaseTemporary(tempRT);
+                    // Pixel format conversion
+                    var buffer = _converter.Encode(tempRT, keepAlpha, false);
+                    RenderTexture.ReleaseTemporary(tempRT);
 
-                // Readback entry allocation and request
-                _pool.NewEntry(w, h, keepAlpha, metadata)
-                     .RequestReadback(buffer, _onReadback);
+                    // Readback entry allocation and request
+                    _pool.NewEntry(w, h, keepAlpha, metadata)
+                        .RequestReadback(buffer, _onReadback);
+                }
             }
         }
     }

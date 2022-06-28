@@ -20,6 +20,7 @@ public sealed partial class NdiRawSender : MonoBehaviour {
     [SerializeField] bool _keepAlpha = false;
     [SerializeField] bool _frameUpdated = false;
     [SerializeField] bool _rgbaChannel = false;
+    [SerializeField] bool _sendOnThread = false;
     bool _hasConnections = false;
 
     public bool keepAlpha { 
@@ -37,6 +38,10 @@ public sealed partial class NdiRawSender : MonoBehaviour {
     
     public bool HasConnections {
         get => _hasConnections;
+    }
+    public bool SendOnThread {
+        get => _sendOnThread;
+        set => _sendOnThread = value;
     }
     #endregion
 
