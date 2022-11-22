@@ -17,9 +17,10 @@ public sealed partial class NdiRawSender : MonoBehaviour {
         Restart();
     }
 
-    [SerializeField] bool _keepAlpha = false;
+    [SerializeField] bool _keepAlpha    = false;
     [SerializeField] bool _frameUpdated = false;
-    [SerializeField] bool _rgbaChannel = false;
+    [SerializeField] bool _fetchScreen  = false;
+    [SerializeField] bool _rgbaChannel  = false;
     [SerializeField] bool _sendOnThread = false;
     bool _hasConnections = false;
 
@@ -30,6 +31,10 @@ public sealed partial class NdiRawSender : MonoBehaviour {
     public bool frameUpdated {
         get => _frameUpdated;
         set => _frameUpdated = value;
+    }
+    public bool fetchScreen {
+        get => _fetchScreen;
+        set => _fetchScreen = value;
     }
     public bool RGBChannel {
         get => _rgbaChannel;
