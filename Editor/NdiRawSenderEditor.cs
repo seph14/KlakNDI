@@ -16,6 +16,7 @@ sealed class NdiRawSenderEditor : UnityEditor.Editor {
     AutoProperty _keepAlpha;
     AutoProperty _rgbaChannel;
     AutoProperty _frameUpdated;
+    AutoProperty _fetchScreen;
     AutoProperty _sourceTexture;
     AutoProperty _sendOnThread;
     #pragma warning restore
@@ -34,6 +35,8 @@ sealed class NdiRawSenderEditor : UnityEditor.Editor {
         EditorGUILayout.PropertyField(_rgbaChannel);
         // Frame Updated
         EditorGUILayout.PropertyField(_frameUpdated);
+        // Fetch Screen
+        EditorGUILayout.PropertyField(_fetchScreen);
         // Send On Thread
         EditorGUILayout.PropertyField(_sendOnThread);
 
