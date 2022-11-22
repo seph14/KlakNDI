@@ -85,6 +85,24 @@ namespace Klak.Ndi {
                                  .RequestReadback(buffer, _onReadback);
                         }
                         frameUpdated = false;
+                    } else if(_fetchScreen) {
+                        // Game View screen capture with a temporary RT
+                        var (w, h) = (Screen.width, Screen.height);
+                        var tempRT = RenderTexture.GetTemporary(w, h, 0);
+                        ScreenCapture.CaptureScreenshotIntoRenderTexture(tempRT);
+                        
+                        if (RGBChannel) {
+                            _pool.NewEntry(w, h, keepAlpha, RGBChannel, metadata)
+                                .RequestReadback(tempRT, _onReadback);
+                        } else {
+                            // Pixel format conversion
+                            var buffer = _converter.Encode(sourceTexture, keepAlpha, true);
+                            // Readback entry allocation and request
+                            _pool.NewEntry(w, h, keepAlpha, RGBChannel, metadata)
+                                 .RequestReadback(buffer, _onReadback);
+                        }
+                        
+                        RenderTexture.ReleaseTemporary(tempRT);
                     }
                 } else _hasConnections = false;
             }
